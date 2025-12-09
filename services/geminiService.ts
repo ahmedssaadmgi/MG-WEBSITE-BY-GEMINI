@@ -1,13 +1,27 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { MonsterStyle } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Helper to safely get key
+const getApiKey = () => {
+  try {
+    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+      return process.env.API_KEY;
+    }
+  } catch (e) {}
+  return undefined;
+};
 
 export const generateMonsterImage = async (
   prompt: string, 
   style: MonsterStyle
 ): Promise<string> => {
+  const apiKey = getApiKey();
+  const ai = new GoogleGenAI({ apiKey: apiKey || 'dummy-key-for-init' });
   
+  if (!apiKey) {
+    console.warn("API Key is missing. AI features will fail.");
+  }
+
   const fullPrompt = `Create a high-fidelity, professional UI/UX or Technical visualization for a software project.
   Project Context: ${prompt}.
   Visual Style: ${style}.
@@ -43,6 +57,9 @@ export const generateMonsterImage = async (
 };
 
 export const generateArchAdvice = async (projectIdea: string) => {
+  const apiKey = getApiKey();
+  const ai = new GoogleGenAI({ apiKey: apiKey || 'dummy-key-for-init' });
+
   const prompt = `You are a Senior Solutions Architect at a top consultancy. 
   Analyze this project idea: "${projectIdea}".
   

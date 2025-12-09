@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, MapPin, CheckCircle2, Download, TrendingUp } from 'lucide-react';
+import { ArrowRight, MapPin, CheckCircle2, Download, TrendingUp, Code } from 'lucide-react';
+import { downloadSourceCode } from '../utils/downloader';
 
 interface HeroProps {
   onScrollToLab: () => void;
@@ -7,6 +8,7 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ onScrollToLab }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isZipping, setIsZipping] = useState(false);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -27,54 +29,11 @@ export const Hero: React.FC<HeroProps> = ({ onScrollToLab }) => {
   };
   
   const handleDownloadPortfolio = () => {
-    const content = `
-MONSTERS GRAPHICS INC.
-Global Software Solutions & AI Consultancy
-==================================================
-
-HEADQUARTERS: New York, USA
-TECHNICAL HUB: Egypt
-ESTABLISHED: 2021
-WEB: https://monstersgraphics.com
-
-ABOUT US
---------------------------------------------------
-Introducing Monsters Graphics Inc., a distinguished software company operating with a technical powerhouse situated in Egypt, enabling us to deliver cutting-edge software services worldwide.
-
-Our core competencies encompass bespoke website design, application development, and tailor-made software solutions meticulously crafted to align with your unique requirements.
-
-CORE COMPETENCIES
---------------------------------------------------
-* Bespoke Web Design (React, Modern HTML5)
-* Application Development (React Native, iOS, Android)
-* AI & Machine Learning (NLP, Automation)
-* Custom Software Architecture (Node.js, Python, Java)
-* Big Data Solutions & Analytics
-
-FEATURED PROJECTS
---------------------------------------------------
-1. Enterprise Legal AI (LegalTech)
-   - Solution: Automated compliance review for law firms.
-
-2. AtarCloud (SaaS)
-   - Region: Saudi Arabia
-   - Solution: Leading property management platform operating 24/7.
-
-3. BookReadyPro (FinTech)
-   - Solution: AI-driven tax preparation platform for accountants.
-
-4. Eyedentify (HealthTech)
-   - Region: Ghana/Global
-   - Solution: Wearable device tracking for surgical campaigns.
-
---------------------------------------------------
-© 2025 Monsters Graphics Inc. All rights reserved.
-    `;
-    
+    const content = `MONSTERS GRAPHICS INC. - CORPORATE PROFILE\n\nSee website for full details.`;
     const element = document.createElement("a");
     const file = new Blob([content], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
-    element.download = "Monsters_Graphics_Portfolio_2025.txt";
+    element.download = "Monsters_Graphics_Portfolio.txt";
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
@@ -82,10 +41,10 @@ FEATURED PROJECTS
 
   return (
     <div className="relative pt-32 pb-20 lg:pt-48 lg:pb-40 bg-slate-50 overflow-hidden">
-      {/* Futuristic Background Elements - Animated Blobs with Parallax */}
+      {/* Background Elements */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
       
-      {/* Animated Gradient Orbs */}
+      {/* Parallax Blobs */}
       <div 
         className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 mix-blend-multiply transition-transform duration-100 ease-out"
         style={{ transform: calculateParallax(-0.02) }}
@@ -121,14 +80,14 @@ FEATURED PROJECTS
               <strong className="font-semibold text-slate-900">Monsters Graphics Inc.</strong> serves as a strategic technology partner, delivering scalable software architectures and advanced AI strategies to global market leaders.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <button 
                 onClick={handleDownloadPortfolio}
                 className="px-8 py-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition-all shadow-xl shadow-slate-900/20 hover:-translate-y-1 flex items-center justify-center gap-3 group relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                 <Download className="w-5 h-5 group-hover:animate-bounce relative z-10" />
-                <span className="relative z-10">Download Corporate Profile</span>
+                <span className="relative z-10">Download Profile</span>
               </button>
               <button 
                 onClick={onScrollToLab}
@@ -136,6 +95,24 @@ FEATURED PROJECTS
               >
                 Access R&D Division
                 <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* New Source Code Button */}
+            <div className="mb-12">
+               <button 
+                onClick={() => downloadSourceCode(setIsZipping)}
+                disabled={isZipping}
+                className="text-sm font-semibold text-brand-600 hover:text-brand-800 flex items-center gap-2 disabled:opacity-50"
+              >
+                {isZipping ? (
+                  <>Downloading...</>
+                ) : (
+                  <>
+                    <Code className="w-4 h-4" />
+                    Download Full Source Code
+                  </>
+                )}
               </button>
             </div>
 
@@ -153,7 +130,6 @@ FEATURED PROJECTS
           </div>
 
           <div className="relative hidden lg:block">
-             {/* Abstract Futuristic Graphic */}
              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/50 bg-white/30 backdrop-blur-md p-3 transform rotate-2 hover:rotate-0 transition-all duration-700 hover:shadow-brand-500/20">
                 <div className="absolute inset-0 bg-gradient-to-tr from-brand-500/10 to-transparent"></div>
                 <img 
@@ -162,7 +138,6 @@ FEATURED PROJECTS
                   className="rounded-xl w-full h-auto object-cover shadow-inner scale-100 group-hover:scale-105 transition-transform duration-700"
                 />
                 
-                {/* Floating Stats Card - Glassmorphism */}
                 <div className="absolute -bottom-8 -left-8 bg-white/90 backdrop-blur-xl p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/20 max-w-xs z-20 hover:-translate-y-2 transition-transform duration-300">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="p-3 bg-brand-50 rounded-xl">

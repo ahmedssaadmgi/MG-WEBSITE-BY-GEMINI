@@ -16,18 +16,31 @@ export const ChatBot: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  // Initialize AI Chat Session
   const aiRef = useRef<any>(null);
   const chatSessionRef = useRef<any>(null);
 
   useEffect(() => {
-    // Scroll to bottom on new message
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isOpen]);
 
+  const getApiKey = () => {
+    try {
+      if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+        return process.env.API_KEY;
+      }
+    } catch (e) {}
+    return undefined;
+  };
+
   const initChat = () => {
     if (!aiRef.current) {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const apiKey = getApiKey();
+      if (!apiKey) {
+         setMessages(prev => [...prev, { role: 'model', text: "SYSTEM ERROR: API Key missing. Please set API_KEY in your environment." }]);
+         return;
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
       aiRef.current = ai;
       
       const systemInstruction = `
@@ -66,9 +79,9 @@ export const ChatBot: React.FC = () => {
 
   const handleSend = async () => {
     if (!input.trim()) return;
-    
-    // Ensure chat is initialized
     initChat();
+    if (!aiRef.current) return;
+    if (!chatSessionRef.current) return;
 
     const userMsg = input;
     setInput('');
@@ -78,7 +91,6 @@ export const ChatBot: React.FC = () => {
     try {
       const result = await chatSessionRef.current.sendMessage({ message: userMsg });
       const responseText = result.text;
-      
       setMessages(prev => [...prev, { role: 'model', text: responseText }]);
     } catch (error) {
       console.error("Chat Error", error);
@@ -97,11 +109,8 @@ export const ChatBot: React.FC = () => {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-      {/* Chat Window */}
       {isOpen && (
         <div className="mb-4 w-[350px] md:w-[400px] h-[500px] bg-white rounded-2xl shadow-2xl border border-brand-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
-          
-          {/* Header */}
           <div className="bg-gradient-to-r from-brand-900 to-brand-800 p-4 flex justify-between items-center text-white">
             <div className="flex items-center gap-2">
               <div className="p-1.5 bg-white/10 rounded-lg">
@@ -120,7 +129,6 @@ export const ChatBot: React.FC = () => {
             </button>
           </div>
 
-          {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 bg-slate-50 space-y-4">
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -151,7 +159,6 @@ export const ChatBot: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
           <div className="p-3 bg-white border-t border-gray-100">
             <div className="flex gap-2">
               <input
@@ -177,7 +184,6 @@ export const ChatBot: React.FC = () => {
         </div>
       )}
 
-      {/* Toggle Button */}
       <button
         onClick={() => {
           setIsOpen(!isOpen);
@@ -186,8 +192,6 @@ export const ChatBot: React.FC = () => {
         className={`${isOpen ? 'scale-0' : 'scale-100'} transition-transform duration-300 group flex items-center justify-center w-14 h-14 bg-brand-600 hover:bg-brand-700 text-white rounded-full shadow-lg hover:shadow-brand-500/40 shadow-brand-500/20`}
       >
         <MessageCircle className="w-7 h-7 group-hover:scale-110 transition-transform" />
-        
-        {/* Notification Dot */}
         {!isOpen && messages.length === 1 && (
             <span className="absolute top-0 right-0 flex h-4 w-4">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>

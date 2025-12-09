@@ -23,13 +23,11 @@ export const TechAdvisor: React.FC = () => {
 
   return (
     <div className="py-24 bg-slate-900 relative overflow-hidden border-t border-slate-800">
-      {/* Background Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]"></div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           
-          {/* Input Section */}
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-900/50 border border-brand-500/30 text-brand-400 text-xs font-bold uppercase tracking-wider mb-6">
               <Cpu className="w-4 h-4" />
@@ -74,7 +72,6 @@ export const TechAdvisor: React.FC = () => {
             </div>
           </div>
 
-          {/* Result Section */}
           <div className="relative min-h-[400px]">
             {result ? (
               <div className="bg-slate-800 border border-slate-700 rounded-2xl p-8 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
